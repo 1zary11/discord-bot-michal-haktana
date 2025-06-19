@@ -18,7 +18,7 @@ After running this command, you can start developing and running your Discord bo
 To start the bot, use one of the following commands in your project directory:
 
 ```
-node index.js
+node .\bot.js
 ```
 
 Or, if you have a `start` script in your `package.json`, you can use:
