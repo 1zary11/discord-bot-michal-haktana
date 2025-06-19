@@ -1,0 +1,26 @@
+{
+  "name": "discord-bot-michal-haktana",
+  "version": "1.0.0",
+  "description": "A discord bot.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1zary11/discord-bot-michal-haktana.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/1zary11/discord-bot-michal-haktana/issues"
+  },
+  "homepage": "https://github.com/1zary11/discord-bot-michal-haktana#readme",
+  "dependencies": {
+    "@discordjs/voice": "^0.18.0",
+    "discord.js": "^14.20.0",
+    "dotenv": "^16.5.0"
+  }
+}
