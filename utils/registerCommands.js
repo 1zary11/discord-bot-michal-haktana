@@ -36,4 +36,19 @@ async function registerCommands() {
     }
 }
 
-module.exports = { registerCommands };
+async function clearCommands() {
+    try {
+        await rest.put(
+            Routes.applicationCommands(CLIENT_ID),
+            { body: [] }
+        );
+        console.log('Successfully cleared all application (/) commands.');
+    } catch (error) {
+        console.error('Error clearing commands:', error);
+    }
+}
+
+// To clear all commands, run: clearCommands();
+// To register commands, run: registerCommands();
+
+module.exports = { registerCommands, clearCommands };
