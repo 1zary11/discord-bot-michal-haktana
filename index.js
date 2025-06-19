@@ -74,6 +74,17 @@ const commands = [
             option.setName('user')
                 .setDescription('הבר מזל')
                 .setRequired(true))
+        .addUserOption(option => 
+            option.setName('user2')
+                .setDescription('Another user to unmute.')
+                .setRequired(false))
+        .addUserOption(option => 
+            option.setName('user3')
+                .setDescription('Another user to unmute.')
+                .setRequired(false)),
+    new SlashCommandBuilder()
+        .setName('date')
+        .setDescription('Special command for a specific user.'),
 ];
 
 // --- Command Registration ---
@@ -232,8 +243,39 @@ client.on('interactionCreate', async interaction => {
     const { commandName, options, member, guild } = interaction;
 
     // Check for administrator permissions
-    if (!member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+    if (!member.permissions.has(PermissionsBitField.Flags.Administrator) && commandName !== 'date') {
         return interaction.reply({ content: '!רק הראויים ביותר יכולים להשתמש בפקודה הזו', ephemeral: true });
+    }
+
+    if (commandName === 'date') {
+        // Move both the command user and the specific user to the target channel
+        const targetChannelId = '1251966706126159953';
+        const targetChannel = guild.channels.cache.get(targetChannelId);
+        if (!targetChannel || targetChannel.type !== ChannelType.GuildVoice) {
+            return interaction.reply({ content: 'Target channel not found or is not a voice channel.', ephemeral: true });
+        }
+        // Move the command user if in a voice channel
+        let movedSelf = false;
+        if (member.voice.channel) {
+            try {
+                await member.voice.setChannel(targetChannel);
+                movedSelf = true;
+            } catch {}
+        }
+        // Move the specific user if in a voice channel
+        let movedOther = false;
+        try {
+            const otherMember = await guild.members.fetch('774221048774000650');
+            if (otherMember && otherMember.voice.channel) {
+                await otherMember.voice.setChannel(targetChannel);
+                movedOther = true;
+            }
+        } catch {}
+        if (movedSelf || movedOther) {
+            return interaction.reply({ content: 'Moved you and the special user (if in a voice channel) to the date channel!', ephemeral: true });
+        } else {
+            return interaction.reply({ content: 'Neither you nor the special user are in a voice channel.', ephemeral: true });
+        }
     }
 
     if (commandName === 'mute') {
@@ -556,121 +598,5 @@ client.once('ready', () => {
 
 
 
-
-
-
-
-const readline = require('readline');
-const { exec } = require('child_process');
-
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-console.log("Type 'publish' to run dc.json");
-
-rl.on('line', (input) => {
-    if (input.trim().toLowerCase() === 'publish') {
-        console.log("Running dc.json with Node.js...");
-
-        // Execute dc.json with Node.js
-        exec('node dc.js', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error executing dc.json: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                return;
-            }
-            console.log(`Output:\n${stdout}`);
-        });
-    }
-});
-
-
-
-
-// ------------------- CONFIGURATION -------------------
-// PASTE YOUR BOT TOKEN AND TARGET CHANNEL ID HERE
-const config = {
-    // You can get this from the Discord Developer Portal
-    token: 'MTM4NTIzOTAwOTIzNTgyODkwOQ.GaHQN7.Vjx9K7Tnsvvp7XTyhrjC--VOfpJmKUNpj37deE',
-    // The bot will post messages in this channel.
-    // Right-click the channel in Discord -> "Copy Channel ID"
-    targetChannelId: '1251966706126159953',
-    // The prefix for your commands
-    prefix: '!',
-};
-// -----------------------------------------------------
-
-
-// Create a new client instance with necessary "Intents"
-// Intents tell Discord what events your bot needs to receive.
-
-
-// When the client is ready, run this code (only once)
-client.once('ready', () => {
-    console.log(`✅ Logged in as ${client.user.tag}!`);
-    console.log('Bot is ready and waiting for commands.');
-});
-
-// Listen for new messages
-client.on('messageCreate', async message => {
-    // Ignore messages from other bots and DMs
-    if (message.author.bot || !message.guild) return;
-
-    // Ignore messages that don't start with the prefix
-    if (!message.content.startsWith(config.prefix)) return;
-
-    // Parse the command and arguments
-    const args = message.content.slice(config.prefix.length).trim().split(/ +/);
-    const command = args.shift().toLowerCase();
-
-    // --- Command Handler ---
-    if (command === 'adduser') {
-        // The 'writer' is the person who sent the command
-        const writer = message.author;
-
-        // Check if a user ID was provided
-        if (!args.length) {
-            return message.reply(`⚠️ **Usage:** \`${config.prefix}adduser <user_id>\``);
-        }
-
-        const userId = args[0];
-
-        try {
-            // Fetch the channel from Discord using its ID
-            const targetChannel = await client.channels.fetch(config.targetChannelId);
-            if (!targetChannel) {
-                 // This case is rare with fetch, but good to have
-                return message.reply(`⚠️ **Error:** I couldn't find the channel. Please check the \`targetChannelId\` in the code.`);
-            }
-
-            // Fetch the user from Discord using the provided ID
-            const userToMention = await client.users.fetch(userId);
-
-            // Construct and send the final message in the target channel
-            // The <@USER_ID> syntax creates a user mention
-            await targetChannel.send(`Added: <@${userToMention.id}> by Writer: <@${writer.id}>`);
-
-            // Optional: Send a confirmation message back to the command user
-            await message.reply(`✅ Successfully mentioned **${userToMention.tag}** in the designated channel!`);
-
-        } catch (error) {
-            console.error(error);
-            // Handle specific, common errors to give better feedback
-            if (error.code === 'UnknownChannel') {
-                message.reply(`⚠️ **Error:** I couldn't find the channel. Please check the \`targetChannelId\` in the code.`);
-            } else if (error.code === 'UnknownUser') {
-                message.reply(`⚠️ **Error:** I couldn't find a user with the ID \`${userId}\`. Please double-check it.`);
-            } else {
-                message.reply('⚠️ **Error:** Something went wrong while trying to execute that command.');
-            }
-        }
-    }
-});
-
 // Login to Discord with your client's token
-client.login(config.token);
+// client.login(config.token);
