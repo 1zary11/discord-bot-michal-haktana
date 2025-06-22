@@ -1,7 +1,9 @@
 // Handles the /date command
 const { SlashCommandBuilder } = require('discord.js');
 
+// Add a name property for command registration
 module.exports = {
+    name: 'date',
     data: new SlashCommandBuilder()
         .setName('date')
         .setDescription('Move yourself and another user to the date channel')

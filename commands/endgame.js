@@ -2,7 +2,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { gameState } = require('../utils/state');
 
+// Add a name property for command registration
 module.exports = {
+    name: 'endgame',
     data: new SlashCommandBuilder()
         .setName('endgame')
         .setDescription('Unmutes everyone in the voice channel and ends the game.'),

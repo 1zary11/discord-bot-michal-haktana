@@ -3,7 +3,9 @@ const { SlashCommandBuilder } = require('discord.js');
 const { followedUsers } = require('../utils/state');
 const { stopGag } = require('../utils/gag');
 
+// Add a name property for command registration
 module.exports = {
+    name: 'unmute',
     data: new SlashCommandBuilder()
         .setName('unmute')
         .setDescription('.משחרר את האדם (כנראה נועם) לחופשי')

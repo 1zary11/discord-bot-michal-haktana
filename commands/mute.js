@@ -4,7 +4,9 @@ const { followedUsers } = require('../utils/state');
 const { joinAndListen, startTagging, stopGag } = require('../utils/gag');
 const { GENERAL_CHANNEL_NAME } = require('../utils/config');
 
+// Add a name property for command registration
 module.exports = {
+    name: 'mute',
     data: new SlashCommandBuilder()
         .setName('mute')
         .setDescription('עוקב אחרי האדם אשר בוצע עליו הפקודה ומשגע לו את התחת')
