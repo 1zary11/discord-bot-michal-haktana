@@ -1,10 +1,15 @@
 // Handles the /mute command
+const { SlashCommandBuilder } = require('discord.js');
 const { followedUsers } = require('../utils/state');
 const { joinAndListen, startTagging, stopGag } = require('../utils/gag');
 const { GENERAL_CHANNEL_NAME } = require('../utils/config');
 
 module.exports = {
-    name: 'mute',
+    data: new SlashCommandBuilder()
+        .setName('mute')
+        .setDescription('עוקב אחרי האדם אשר בוצע עליו הפקודה ומשגע לו את התחת')
+        .addUserOption(option => option.setName('user').setDescription('הקורבן 😉').setRequired(true))
+        .addIntegerOption(option => option.setName('time').setDescription('זמן (בשניות)  (0 = ♾️)').setRequired(true)),
     async execute(interaction) {
         const { guild, options, user } = interaction;
         const userToGag = options.getUser('user');
@@ -28,6 +33,6 @@ module.exports = {
         } else {
             await startTagging(guild, userToGag.id);
         }
-        await interaction.reply({ content: `שלחת את אבוש על ${userToGag.username}${duration > 0 ? ` ל ${duration} שניות` : ' indefinitely'}.`, ephemeral: true });
+        await interaction.reply({ content: `שלטת את אבוש על ${userToGag.username}${duration > 0 ? ` ל ${duration} שניות` : ' indefinitely'}.`, ephemeral: true });
     }
 };
