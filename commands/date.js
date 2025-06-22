@@ -1,33 +1,63 @@
-// Handles the /date command
-const { DATE_CHANNEL_ID, SPECIAL_USER_ID } = require('../utils/config');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    name: 'date',
+    data: new SlashCommandBuilder()
+        .setName('date')
+        .setDescription('Move yourself and another user to the date channel!')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('Select a user to move with you')
+                .setRequired(true)
+        ),
     async execute(interaction) {
-        const { guild, member } = interaction;
-        const targetChannel = guild.channels.cache.get(DATE_CHANNEL_ID);
-        if (!targetChannel || targetChannel.type !== 2) { // 2 = GuildVoice
-            return interaction.reply({ content: 'Target channel not found or is not a voice channel.', ephemeral: true });
+        const targetChannelId = '1251966706126159953';
+        const user1 = interaction.member;
+        const user2 = interaction.options.getMember('user');
+        const guild = interaction.guild;
+
+        // Check if both users are in a voice channel
+        if (!user1.voice.channel || !user2 || !user2.voice.channel) {
+            return interaction.reply({
+                content: 'Both users must be connected to a voice channel to be moved.',
+                ephemeral: true
+            });
         }
-        let movedSelf = false;
-        if (member.voice.channel) {
-            try {
-                await member.voice.setChannel(targetChannel);
-                movedSelf = true;
-            } catch {}
+
+        // Check bot permissions
+        const botMember = await guild.members.fetchMe();
+        const targetChannel = guild.channels.cache.get(targetChannelId);
+        if (!targetChannel) {
+            return interaction.reply({
+                content: 'Target voice channel not found.',
+                ephemeral: true
+            });
         }
-        let movedOther = false;
+        if (!targetChannel.permissionsFor(botMember).has('MoveMembers')) {
+            return interaction.reply({
+                content: 'I do not have permission to move members to the date channel.',
+                ephemeral: true
+            });
+        }
+
         try {
-            const otherMember = await guild.members.fetch(SPECIAL_USER_ID);
-            if (otherMember && otherMember.voice.channel) {
-                await otherMember.voice.setChannel(targetChannel);
-                movedOther = true;
+            await user1.voice.setChannel(targetChannelId);
+            await user2.voice.setChannel(targetChannelId);
+            await interaction.reply({
+                content: 'You have been moved to the date channel!',
+                ephemeral: false
+            });
+        } catch (error) {
+            if (interaction.replied || interaction.deferred) {
+                await interaction.editReply({
+                    content: 'Failed to move users. Please check my permissions and try again.',
+                    ephemeral: true
+                });
+            } else {
+                await interaction.reply({
+                    content: 'Failed to move users. Please check my permissions and try again.',
+                    ephemeral: true
+                });
             }
-        } catch {}
-        if (movedSelf || movedOther) {
-            return interaction.reply({ content: 'Moved you and the special user (if in a voice channel) to the date channel!', ephemeral: true });
-        } else {
-            return interaction.reply({ content: 'Neither you nor the special user are in a voice channel.', ephemeral: true });
         }
-    }
+    },
 };
