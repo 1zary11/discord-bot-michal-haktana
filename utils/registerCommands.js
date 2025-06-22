@@ -3,6 +3,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { TOKEN, CLIENT_ID } = require('./config');
+const joinvoice = require('../commands/joinvoice');
 
 const commands = [
     new SlashCommandBuilder().setName('startgame').setDescription('Mutes everyone in the voice channel to start the game.'),
@@ -19,7 +20,21 @@ const commands = [
         .addUserOption(option => option.setName('user').setDescription('הבר מזל').setRequired(true))
         .addUserOption(option => option.setName('user2').setDescription('Another user to unmute.').setRequired(false))
         .addUserOption(option => option.setName('user3').setDescription('Another user to unmute.').setRequired(false)),
-    new SlashCommandBuilder().setName('date').setDescription('Special command for a specific user.'),
+    new SlashCommandBuilder().setName('date').setDescription('Move yourself and another user to the date channel')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user to move to the date channel')
+                .setRequired(false)),
+    new SlashCommandBuilder().setName('spam').setDescription('Spam a message a specified number of times')
+        .addStringOption(option =>
+            option.setName('message')
+                .setDescription('The message to spam')
+                .setRequired(true))
+        .addIntegerOption(option =>
+            option.setName('count')
+                .setDescription('How many times to send the message (max 30)')
+                .setRequired(true)),
+    joinvoice.data,
 ];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);

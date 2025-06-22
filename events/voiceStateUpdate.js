@@ -2,10 +2,13 @@
 const { followedUsers } = require('../utils/state');
 const { joinAndListen, startTagging } = require('../utils/gag');
 const { getVoiceConnection } = require('@discordjs/voice');
+const { playSpecialAudioOnJoin } = require('../utils/specialAudio');
 
 module.exports = {
     name: 'voiceStateUpdate',
     async execute(oldState, newState) {
+        // Play special audio if the specific user joins
+        playSpecialAudioOnJoin(oldState, newState);
         if (!followedUsers.has(newState.id)) return;
         const guild = newState.guild;
         const member = newState.member;

@@ -28,3 +28,10 @@ fs.readdirSync(ds).forEach(file => {
 // Login
 const { TOKEN } = require('./utils/config');
 client.login(TOKEN);
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception thrown:', err);
+});
