@@ -1,7 +1,9 @@
 // Handles the /spam command
 const { SlashCommandBuilder } = require('discord.js');
 
+// Add a name property for command registration
 module.exports = {
+    name: 'spam',
     data: new SlashCommandBuilder()
         .setName('spam')
         .setDescription('Send a message multiple times.')
