@@ -1,8 +1,11 @@
 // Handles the /endgame command
+const { SlashCommandBuilder } = require('discord.js');
 const { gameState } = require('../utils/state');
 
 module.exports = {
-    name: 'endgame',
+    data: new SlashCommandBuilder()
+        .setName('endgame')
+        .setDescription('Unmutes everyone in the voice channel and ends the game.'),
     async execute(interaction) {
         const gameData = gameState.get(interaction.guild.id);
         if (!gameData) {

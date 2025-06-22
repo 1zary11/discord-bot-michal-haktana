@@ -1,8 +1,11 @@
-// Handles the /startgame, /endgame, /endmeeting, /report commands
+// Handles the /startgame command
+const { SlashCommandBuilder } = require('discord.js');
 const { gameState } = require('../utils/state');
 
 module.exports = {
-    name: 'startgame',
+    data: new SlashCommandBuilder()
+        .setName('startgame')
+        .setDescription('Mutes everyone in the voice channel to start the game.'),
     async execute(interaction) {
         const member = interaction.member;
         if (!member.voice.channel) {

@@ -1,9 +1,15 @@
 // Handles the /unmute command
+const { SlashCommandBuilder } = require('discord.js');
 const { followedUsers } = require('../utils/state');
 const { stopGag } = require('../utils/gag');
 
 module.exports = {
-    name: 'unmute',
+    data: new SlashCommandBuilder()
+        .setName('unmute')
+        .setDescription('.משחרר את האדם (כנראה נועם) לחופשי')
+        .addUserOption(option => option.setName('user').setDescription('הבר מזל').setRequired(true))
+        .addUserOption(option => option.setName('user2').setDescription('Another user to unmute.').setRequired(false))
+        .addUserOption(option => option.setName('user3').setDescription('Another user to unmute.').setRequired(false)),
     async execute(interaction) {
         const { guild, options } = interaction;
         const userToUnGag = options.getUser('user');
@@ -12,7 +18,7 @@ module.exports = {
                 const memberToUnmute = await guild.members.fetch(userToUnGag.id);
                 if (memberToUnmute?.voice.serverMute) {
                     await memberToUnmute.voice.setMute(false);
-                    return interaction.reply({ content: `אז הורדתי לו מיוט ${userToUnGag.username} אני לא כרגע מעצבן את.`, ephemeral: true });
+                    return interaction.reply({ content: `אז הורדתי לו מיות ${userToUnGag.username} אני לא כרגע מעצבן את.`, ephemeral: true });
                 }
             } catch {}
             return interaction.reply({ content: `${userToUnGag.username} is not currently being gagged.`, ephemeral: true });

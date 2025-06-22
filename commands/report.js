@@ -1,8 +1,14 @@
 // Handles the /report command
+const { SlashCommandBuilder } = require('discord.js');
 const { gameState } = require('../utils/state');
 
 module.exports = {
-    name: 'report',
+    data: new SlashCommandBuilder()
+        .setName('report')
+        .setDescription('Unmutes players for a meeting, keeping specified users muted.')
+        .addUserOption(option => option.setName('user1').setDescription('A user to keep muted.').setRequired(true))
+        .addUserOption(option => option.setName('user2').setDescription('Another user to keep muted.').setRequired(false))
+        .addUserOption(option => option.setName('user3').setDescription('Another user to keep muted.').setRequired(false)),
     async execute(interaction) {
         const gameData = gameState.get(interaction.guild.id);
         if (!gameData) {

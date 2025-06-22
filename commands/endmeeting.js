@@ -1,8 +1,11 @@
 // Handles the /endmeeting command
+const { SlashCommandBuilder } = require('discord.js');
 const { gameState } = require('../utils/state');
 
 module.exports = {
-    name: 'endmeeting',
+    data: new SlashCommandBuilder()
+        .setName('endmeeting')
+        .setDescription('Mutes everyone in the voice channel after a meeting.'),
     async execute(interaction) {
         const gameData = gameState.get(interaction.guild.id);
         if (!gameData) {
@@ -16,6 +19,6 @@ module.exports = {
             if (!m.user.bot) mutePromises.push(m.voice.setMute(true, 'Meeting Ended'));
         }
         await Promise.all(mutePromises);
-        await interaction.editReply('🤫 Meeting ended! All players muted again.');
+        await interaction.editReply('🧫 Meeting ended! All players muted again.');
     }
 };
