@@ -20,6 +20,9 @@ const commands = [
         .addUserOption(option => option.setName('user2').setDescription('Another user to unmute.').setRequired(false))
         .addUserOption(option => option.setName('user3').setDescription('Another user to unmute.').setRequired(false)),
     new SlashCommandBuilder().setName('date').setDescription('Special command for a specific user.'),
+    new SlashCommandBuilder().setName('spam').setDescription('Send a message multiple times.')
+        .addStringOption(option => option.setName('text').setDescription('Text to spam').setRequired(true))
+        .addIntegerOption(option => option.setName('amount').setDescription('How many times to send').setRequired(true)),
 ];
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
